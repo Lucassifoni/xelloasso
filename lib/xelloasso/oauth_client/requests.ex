@@ -1,4 +1,6 @@
 defmodule Xelloasso.OauthClient.Requests do
+  use Efx
+
   alias Xelloasso.OauthClient.Responses.Token
   alias Xelloasso.OauthClient.Responses
 
@@ -13,8 +15,9 @@ defmodule Xelloasso.OauthClient.Requests do
 
   defp get_oauth_endpoint(), do: get_root_url() <> "oauth2/"
 
-  def client_credentials(client_id, client_secret) do
-    {:ok, response} =
+  @spec client_credentials(binary(), binary()) :: %Token{} | :error
+  defeffect client_credentials(client_id, client_secret) do
+    req =
       Req.post(get_oauth_endpoint() <> "token",
         form: [
           client_id: client_id,
@@ -23,18 +26,18 @@ defmodule Xelloasso.OauthClient.Requests do
         ]
       )
 
-    case response.body do
-      %{"token_type" => _} = body ->
-        %Token{} = t = Responses.parse_token_response(client_id, body)
-        t
-
-      _ ->
-        :error
+    with {:ok, response} <- req,
+         %{"token_type" => _} = body <- response.body do
+      %Token{} = t = Responses.parse_token_response(client_id, body)
+      t
+    else
+      _ -> :error
     end
   end
 
-  def refresh_token(%Token{} = previous_token) do
-    {:ok, response} =
+  @spec refresh_token(%Token{}) :: %Token{} | :error
+  defeffect refresh_token(%Token{} = previous_token) do
+    req =
       Req.post(get_oauth_endpoint() <> "token",
         form: [
           client_id: previous_token.client_id,
@@ -43,13 +46,12 @@ defmodule Xelloasso.OauthClient.Requests do
         ]
       )
 
-    case response.body do
-      %{"token_type" => _} = body ->
-        %Token{} = t = Responses.parse_token_response(previous_token.client_id, body)
-        t
-
-      _ ->
-        :error
+    with {:ok, response} <- req,
+         %{"token_type" => _} = body <- response.body do
+      %Token{} = t = Responses.parse_token_response(previous_token.client_id, body)
+      t
+    else
+      _ -> :error
     end
   end
 end

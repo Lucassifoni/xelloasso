@@ -20,15 +20,15 @@ defmodule Xelloasso.OauthClient do
   end
 
   @impl true
-  def handle_continue({:oauth_flow, credentials}, _state) do
-    case Requests.client_credentials(credentials.client_id, credentials.client_secret) do
+  def handle_continue({:oauth_flow, options}, _state) do
+    case Requests.client_credentials(options.client_id, options.client_secret) do
       :error ->
-        :stop
+        {:stop, :normal, nil}
 
       %Token{} = t ->
-        credentials.callback.(t)
+        options.callback.(t)
         send(self(), :refresh_token)
-        {:noreply, {t, credentials.callback}}
+        {:noreply, {t, options.callback}}
     end
   end
 
@@ -36,7 +36,7 @@ defmodule Xelloasso.OauthClient do
   def handle_info(:refresh_token, {state, callback}) do
     case Requests.refresh_token(state) do
       :error ->
-        :stop
+        {:stop, :normal, {state, callback}}
 
       %Token{} = t ->
         callback.(t)
