@@ -1,4 +1,4 @@
-defmodule Xelloasso.OauthClient.Responses.TokenResponse do
+defmodule Xelloasso.OauthClient.Responses.Token do
   defstruct [:client_id, :access_token, :expires_in, :refresh_token, :token_type]
 
   def new(%{

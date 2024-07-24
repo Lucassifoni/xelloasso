@@ -1,5 +1,5 @@
 defmodule Xelloasso.OauthClient.Responses do
-  alias Xelloasso.OauthClient.Responses.TokenResponse
+  alias Xelloasso.OauthClient.Responses.Token
 
   def parse_token_response(client_id, %{
         "access_token" => at,
@@ -7,7 +7,7 @@ defmodule Xelloasso.OauthClient.Responses do
         "refresh_token" => refresh,
         "token_type" => "bearer"
       }) do
-    %TokenResponse{
+    %Token{
       client_id: client_id,
       access_token: at,
       expires_in: expires,
