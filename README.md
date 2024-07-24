@@ -1,6 +1,6 @@
 # Xelloasso
 
-## Work in progress. The goal is to get feature parity with https://api.helloasso.com/v5/swagger/ui/index as of july 24.
+## Work in progress. The goal is to get feature parity with https://api.helloasso.com/v5/swagger/ui/index
 
 ## Installation
 
